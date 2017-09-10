@@ -93,7 +93,12 @@ module.exports = function () {
                 __transitionRedirecType = 401;
                 cb.call(this, this.options.authRedirect);
             }
-            else if (routeAuth.constructor === Array && ! __utils.compare(routeAuth, this.watch.data[this.options.rolesVar])) {
+            else if (routeAuth.constructor === Array
+              && ( (routeAuth.length === 0)
+                || (typeof routeAuth[0] === 'object' && ! __utils.compare(routeAuth, this.watch.data[this.options.rolesVar]))
+                || (typeof routeAuth[0] === 'string' && ! __utils.compare(routeAuth.reduce(toObject, {}), this.watch.data))
+              )
+            ) {
                 __transitionRedirecType = 403;
                 cb.call(this, this.options.forbiddenRedirect);
             }
