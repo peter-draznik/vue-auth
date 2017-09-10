@@ -83,24 +83,30 @@ module.exports = function () {
     }
 
     function _transitionEach(transition, routeAuth, cb) {
+      console.log('routeAuth: ', routeAuth);
         routeAuth = __utils.toArray(routeAuth);
-        
+
         __transitionPrev = __transitionThis;
         __transitionThis = transition;
-        
-        if (routeAuth && (routeAuth === true || routeAuth.constructor === Array)) {
+
+        if (routeAuth && (routeAuth === true || routeAuth.constructor === Array  || typeof routeAuth === 'object')) {
             if ( ! this.check()) {
                 __transitionRedirecType = 401;
                 cb.call(this, this.options.authRedirect);
             }
-            else if (routeAuth.constructor === Array
-              && ( (routeAuth.length === 0)
-                || (typeof routeAuth[0] === 'object' && ! __utils.compare(routeAuth, this.watch.data[this.options.rolesVar]))
-                || (typeof routeAuth[0] === 'string' && ! __utils.compare(routeAuth.reduce(toObject, {}), this.watch.data))
-              )
-            ) {
-                __transitionRedirecType = 403;
-                cb.call(this, this.options.forbiddenRedirect);
+            else if ( (routeAuth.constructor === Array && ! __utils.compare(routeAuth, this.watch.data[this.options.rolesVar])) ){
+                __transitionRedirecType = 403
+                cb.call(this, this.options.forbiddenRedirect)
+            }else if ( (typeof routeAuth === 'object' && ! __utils.compare(Object.keys(routeAuth).reduce((carry, key) => {
+                carry[key] = this.watch.data[key]
+                return carry
+              }, {}), Object.values(routeAuth).reduce((carry, key) => {
+                carry[key] = transition.params[key]
+                return carry
+              }, {}))
+            ) ) {
+              __transitionRedirecType = 403
+              cb.call(this, this.options.forbiddenRedirect)
             }
             else {
                 this.watch.redirect = __transitionRedirecType ? {type: __transitionRedirecType, from: __transitionPrev, to: __transitionThis} : null;
@@ -114,6 +120,7 @@ module.exports = function () {
             cb.call(this, this.options.notFoundRedirect);
         }
         else {
+          console.log('Free auth');
             this.watch.redirect = __transitionRedirecType ? {type: __transitionRedirecType, from: __transitionPrev, to: __transitionThis} : null;
             __transitionRedirecType = null;
 
