@@ -78,7 +78,7 @@ Vue.router = new VueRouter({
         meta: {auth: true},
         component: require('./Account')
     }, {
-        path: '/account:id',
+        path: '/account/:id',
         meta: {auth: {
             _id: 'id'
         }},
