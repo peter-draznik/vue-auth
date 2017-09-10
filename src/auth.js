@@ -83,7 +83,6 @@ module.exports = function () {
     }
 
     function _transitionEach(transition, routeAuth, cb) {
-      console.log('routeAuth: ', routeAuth);
         routeAuth = __utils.toArray(routeAuth);
 
         __transitionPrev = __transitionThis;
@@ -120,7 +119,6 @@ module.exports = function () {
             cb.call(this, this.options.notFoundRedirect);
         }
         else {
-          console.log('Free auth');
             this.watch.redirect = __transitionRedirecType ? {type: __transitionRedirecType, from: __transitionPrev, to: __transitionThis} : null;
             __transitionRedirecType = null;
 
